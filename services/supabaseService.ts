@@ -22,21 +22,39 @@ class SupabaseService {
     async savePackingList(state: PackingListState): Promise<void> {
         if (!this.client) return;
 
+        const payload = {
+            order_id: state.order_id,
+            order_name: state.order_name,
+            places: state.places,
+            unpacked_items: state.unpacked_items,
+            order_comment: state.order_comment,
+            updated_at: new Date().toISOString()
+        };
+
         try {
             const { error } = await this.client
                 .from('packing_lists')
-                .upsert({
-                    order_id: state.order_id,
-                    order_name: state.order_name,
-                    places: state.places,
-                    unpacked_items: state.unpacked_items,
-                    order_comment: state.order_comment,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'order_id' });
+                .upsert(payload, { onConflict: 'order_id' });
 
             if (error) throw error;
-        } catch (e) {
-            console.error("Supabase Save Error:", e);
+        } catch (e: any) {
+            console.error("Supabase Save Error:", JSON.stringify(e, null, 2));
+
+            // Fallback: Try saving without order_comment if it failed (likely due to missing column)
+            if (state.order_comment !== undefined) {
+                console.warn("Attempting fallback save without order_comment...");
+                const { order_comment, ...fallbackPayload } = payload;
+                try {
+                    const { error: retryError } = await this.client
+                        .from('packing_lists')
+                        .upsert(fallbackPayload, { onConflict: 'order_id' });
+                    
+                    if (retryError) throw retryError;
+                    console.log("Fallback save successful.");
+                } catch (retryE) {
+                    console.error("Fallback Save Error:", JSON.stringify(retryE, null, 2));
+                }
+            }
         }
     }
 
@@ -64,7 +82,7 @@ class SupabaseService {
             }
             return null;
         } catch (e) {
-            console.error("Supabase Load Error:", e);
+            console.error("Supabase Load Error:", JSON.stringify(e, null, 2));
             return null;
         }
     }
@@ -81,7 +99,7 @@ class SupabaseService {
             if (error) throw error;
             return data || [];
         } catch (e) {
-            console.error("Supabase History Error:", e);
+            console.error("Supabase History Error:", JSON.stringify(e, null, 2));
             return [];
         }
     }
@@ -96,12 +114,12 @@ class SupabaseService {
                 .eq('order_id', orderId);
 
             if (error) {
-                console.error("Supabase API Delete Error:", error);
+                console.error("Supabase API Delete Error:", JSON.stringify(error, null, 2));
                 throw error;
             }
             return true;
         } catch (e) {
-            console.error("Supabase Delete Exception:", e);
+            console.error("Supabase Delete Exception:", JSON.stringify(e, null, 2));
             return false;
         }
     }

@@ -504,10 +504,12 @@ export const PackingListModal: React.FC<PackingListModalProps> = ({ order, posit
                 <div>
                 <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
                     Упаковка заказа {order.name}
-                    {isSyncing ? 
-                        <RefreshCw className="w-3.5 h-3.5 text-slate-400 animate-spin" title="Синхронизация..." /> :
-                        <Cloud className="w-3.5 h-3.5 text-emerald-500" title="Сохранено в облаке" />
-                    }
+                    <span title={isSyncing ? "Синхронизация..." : "Сохранено в облаке"}>
+                        {isSyncing ? 
+                            <RefreshCw className="w-3.5 h-3.5 text-slate-400 animate-spin" /> :
+                            <Cloud className="w-3.5 h-3.5 text-emerald-500" />
+                        }
+                    </span>
                 </h2>
                 <div className="flex items-center gap-3 text-xs font-medium text-slate-500 mt-0.5">
                     <span className="flex items-center"><Box className="w-3 h-3 mr-1" /> {packedItemsCount} из {totalItemsCount} товаров</span>
