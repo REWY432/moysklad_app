@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,22 +19,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # cache: 'npm' # Отключено, так как требует package-lock.json
 
       - name: Install dependencies
-        run: npm install # Используем install вместо ci, чтобы работать без package-lock.json
+        run: npm install
 
       - name: Build
         run: npm run build
         env:
-          # Если вы используете секреты в репозитории, раскомментируйте строки ниже:
-          # VITE_API_KEY: ${{ secrets.API_KEY }}
-          # VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          # VITE_SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           CI: false
+
+      - name: Create .nojekyll
+        run: touch dist/.nojekyll
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
           branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
