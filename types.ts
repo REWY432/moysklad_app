@@ -95,5 +95,6 @@ export interface PackingListState {
     order_name: string;
     places: CargoPlace[];
     unpacked_items: MSOrderPosition[];
+    order_comment?: string;
     updated_at?: string;
 }

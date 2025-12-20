@@ -30,6 +30,7 @@ class SupabaseService {
                     order_name: state.order_name,
                     places: state.places,
                     unpacked_items: state.unpacked_items,
+                    order_comment: state.order_comment,
                     updated_at: new Date().toISOString()
                 }, { onConflict: 'order_id' });
 
@@ -57,6 +58,7 @@ class SupabaseService {
                     order_name: data.order_name,
                     places: data.places,
                     unpacked_items: data.unpacked_items,
+                    order_comment: data.order_comment,
                     updated_at: data.updated_at
                 };
             }
@@ -125,6 +127,7 @@ class SupabaseService {
                             order_name: newData.order_name,
                             places: newData.places,
                             unpacked_items: newData.unpacked_items,
+                            order_comment: newData.order_comment,
                             updated_at: newData.updated_at
                         });
                     }
