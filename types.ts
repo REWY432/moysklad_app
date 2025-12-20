@@ -69,13 +69,6 @@ export interface MSOrder {
   description?: string;
 }
 
-export interface AIChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  timestamp: Date;
-}
-
 export enum AppView {
   LOGIN = 'LOGIN',
   DASHBOARD = 'DASHBOARD',
